@@ -20,13 +20,15 @@ public class PlacementController : MonoBehaviour
         }
     }
 
+    private bool worldPlaced;
+
     private ARRaycastManager arRaycastManager;
 
     void Awake() {
         arRaycastManager = GetComponent<ARRaycastManager>();
     }
 
-    bool TryGetTouchPosition(out Vector2 touchPosition) {
+    private bool TryGetTouchPosition(out Vector2 touchPosition) {
         if (Input.touchCount > 0) {
             touchPosition = Input.GetTouch(0).position;
             return true;
@@ -37,13 +39,26 @@ public class PlacementController : MonoBehaviour
         return false;
     }
 
-    void Update() {
-        if (!TryGetTouchPosition(out Vector2 touchPosition))
-            return;
+    private void RemovePlanes() {
+        ARPlaneManager pm = GetComponent<ARPlaneManager>();
+        foreach (var plane in pm.trackables) {
+            plane.gameObject.SetActive(false);
+        }
+        pm.enabled = false;
+    }
 
-        if (arRaycastManager.Raycast(touchPosition, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon)) {
-            Pose hitPose = hits[0].pose;
-            Instantiate(placedPrefab, hitPose.position, hitPose.rotation);
+
+    void Update() {
+        if (!worldPlaced) {
+            if (!TryGetTouchPosition(out Vector2 touchPosition))
+                return;
+
+            if (arRaycastManager.Raycast(touchPosition, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon)) {
+                Pose hitPose = hits[0].pose;
+                Instantiate(placedPrefab, hitPose.position, hitPose.rotation);
+                worldPlaced = true;
+                RemovePlanes();
+            }
         }
     }
 
