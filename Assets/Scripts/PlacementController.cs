@@ -41,7 +41,7 @@ public class PlacementController : MonoBehaviour
 
     private void RemovePlanes() {
         ARPlaneManager pm = GetComponent<ARPlaneManager>();
-        foreach (var plane in pm.trackables) {
+        foreach (ARPlane plane in pm.trackables) {
             plane.gameObject.SetActive(false);
         }
         pm.enabled = false;
@@ -55,7 +55,7 @@ public class PlacementController : MonoBehaviour
 
             if (arRaycastManager.Raycast(touchPosition, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon)) {
                 Pose hitPose = hits[0].pose;
-                Instantiate(placedPrefab, hitPose.position, hitPose.rotation);
+                Instantiate(placedPrefab, hitPose.position, placedPrefab.transform.rotation);
                 worldPlaced = true;
                 RemovePlanes();
             }

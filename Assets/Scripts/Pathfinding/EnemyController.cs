@@ -20,27 +20,24 @@ public class EnemyController : MonoBehaviour {
     private bool SpinnedWorld;
 
     private void Start() {
-       
-        goal = GameManager.Instance.ExitLevel1;
         originPos = transform.position;
         agent = GetComponent<NavMeshAgent>();
-        agent.destination = goal.position;
+
         //animator = GetComponent<Animator>();
         //animator.Play("Walk");
     }
 
     private void Update() {
-        //if (!CrashedPlayer) {  
-        //        agent.destination = goal.position;        
-        //} else {
-        //    t += Time.deltaTime;
-        //}
-        //if (t > 5) {
-        //    t = 0;
-        //    CrashedPlayer = false;
-        //    agent.enabled = true;
-        //    //animator.Play("Walk");
-        //}
+
+        t += Time.deltaTime;
+        
+        if (t > 5) {
+            t = 0;
+            CrashedPlayer = false;
+            agent.enabled = true;
+            agent.destination = GameManager.Instance.ExitLevel1.position;
+            //animator.Play("Walk");
+        }
 
         // if enemy has reached his origin position
         //if (!agent.pathPending && SpinnedWorld) {

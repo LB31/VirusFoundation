@@ -2,14 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
+using System;
 
 public class CreateLevel : MonoBehaviour
 {
     //The tiles have been modeled as 4x4 unity unit squares
     private const float tileSize = 4;
 
-    private GameObject root, floor, environment, ball;
+    private GameObject root, floor, environment, enemy;
     public int xHalfExt = 1;
     public int zHalfExt = 1;
 
@@ -31,17 +32,17 @@ public class CreateLevel : MonoBehaviour
     private Transform tilesParent;
 
     public LocalNavMeshBuilder lnmb;
+    public Transform FirstPlate;
 
     // Use this for initialization
-    void Awake()
-    {
+    async void Start() {
         lnmb = GetComponent<LocalNavMeshBuilder>();
 
         //Gather together all refrences you will need later on
         root = GameObject.Find("MovablePlayfield");
         floor = GameObject.Find("DSBasementFloor");
         environment = GameObject.Find("Environment");
-        ball = GameObject.Find("DSPlayerBall");
+        enemy = GameObject.Find("VirusEnemyMaze");
 
         //Build the values for xExt and zExt from xHalfExt and zHalfExt
         xExt = 2 * xHalfExt + 1;
@@ -59,33 +60,43 @@ public class CreateLevel : MonoBehaviour
         ////Scale Environment
         //Vector3 oldScaleEnv = environment.transform.localScale;
         //environment.transform.localScale = new Vector3(oldScaleEnv.x * scaleFactor / 3, oldScaleEnv.y * scaleFactor / 3, oldScaleEnv.z * scaleFactor / 3);
-        
+
         //Scale  + position BasePlate
         //Vector3 oldScaleFloor = floor.transform.localScale;
         //floor.transform.localScale = new Vector3(oldScaleFloor.x * scaleFactor / 3, oldScaleFloor.y, oldScaleFloor.z * scaleFactor / 3);
 
 
-            //Create the outer walls for given extXZ
-            outerWallsParent = GameObject.Find("OuterWalls").transform;
-            CreateOuterWalls();
+        //Create the outer walls for given extXZ
+        outerWallsParent = GameObject.Find("OuterWalls").transform;
+        CreateOuterWalls();
 
-            //create a maze
-            CalcMaze();
+        //create a maze
+        CalcMaze();
 
-            //Build the maze from the given set of prefabs
-            tilesParent = GameObject.Find("Tiles").transform;
-            innerWallsParent = GameObject.Find("InnerWalls").transform;
-            BuildMaze();
+        //Build the maze from the given set of prefabs
+        tilesParent = GameObject.Find("Tiles").transform;
+        innerWallsParent = GameObject.Find("InnerWalls").transform;
+        BuildMaze();
 
-            //Set the walls for the maze (place only one wall between two cells, not two!)
-            // already done in CalcMaze()
+        //Set the walls for the maze (place only one wall between two cells, not two!)
+        // already done in CalcMaze()
 
-            //Place the PlayerBall above the playfield
-            resetPosition = new Vector3(xExt * 2 - 2, 10, -zExt * 2 + 2);
-            placeBallStart(resetPosition);
+        //Place the PlayerBall above the playfield
+        resetPosition = new Vector3(xExt * 2 - 2, 10, -zExt * 2 + 2);
+        placeBallStart(resetPosition);
 
-            // Make nav mesh
-            lnmb.enabled = true;
+
+        // Make nav mesh
+        lnmb.enabled = true;
+
+        // Resize field
+        //transform.parent.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+
+        //await Task.Delay(TimeSpan.FromSeconds(2));
+
+        //placeBallStart(FirstPlate.localPosition);
+
+
 
 
     }
@@ -109,7 +120,7 @@ public class CreateLevel : MonoBehaviour
         int startX = xExt * 2;
         int startZ = zExt * 2;
         for (int i = 0; i < playfield.Length; i++) {
-            int rand = Random.Range(0, floorTiles.Length);
+            int rand = UnityEngine.Random.Range(0, floorTiles.Length);
             GameObject tileToUse;
             if (i == exitCell) tileToUse = exitTile;
             else tileToUse = floorTiles[rand];
@@ -117,8 +128,11 @@ public class CreateLevel : MonoBehaviour
             float x = -startX + pos.x * tileSize + 2;
             float z = startZ - pos.y * tileSize - 2;
             GameObject tile = Instantiate(tileToUse, new Vector3(x, 0, z), Quaternion.Euler(0, 0, 0), tilesParent);
-            if(tile.name.Contains("Exit"))
-            GameManager.Instance.ExitLevel1 = tile.transform;
+            if (tile.name.Contains("Exit")) {
+                GameManager.Instance.ExitLevel1 = tile.transform.Find("ExitGoal");
+            }
+            if (i == 0) FirstPlate = tile.transform;
+
 
             Cell c = playfield[i];
             if (c.walls["UP"]) Instantiate(innerWall, new Vector3(x, 0, z + 2), Quaternion.Euler(0, 0, 0), innerWallsParent);
@@ -141,7 +155,7 @@ public class CreateLevel : MonoBehaviour
         int unvisitedCells = (xExt * zExt) - 1;
         exitCell = 0;
         while (unvisitedCells > 0) { // While there are unvisited cells :Recursive backtracker
-            
+
             Dictionary<string, int> neighbours = GetNeighbours(current.position);
 
             // Remove the outside inner walls
@@ -152,8 +166,8 @@ public class CreateLevel : MonoBehaviour
             if (neighbours.Any(dir => dir.Value >= 0 && dir.Value < xExt * zExt && !playfield[dir.Value].visited)) { // If the current cell has any neighbours which have not been visited :Recursive backtracker
                 // Choose randomly one of the unvisited neighbours :Recursive backtracker
                 List<int> unvisitedNeighbours = neighbours.Where(dir => dir.Value >= 0 && dir.Value < xExt * zExt && !playfield[dir.Value].visited).Select(x => x.Value).ToList();
-                Cell chosenNeighbour = playfield[unvisitedNeighbours[Random.Range(0, unvisitedNeighbours.Count)]];
-                
+                Cell chosenNeighbour = playfield[unvisitedNeighbours[UnityEngine.Random.Range(0, unvisitedNeighbours.Count)]];
+
                 gameStack.Push(current); // Push the current cell to the stack :Recursive backtracker
 
                 // Remove the walls between the current cell and the chosen cell :Recursive backtracker
@@ -166,7 +180,7 @@ public class CreateLevel : MonoBehaviour
                 current = chosenNeighbour;
                 current.visited = true;
                 unvisitedCells--;
-                if(unvisitedCells == 0) {
+                if (unvisitedCells == 0) {
                     // Remove the outside inner walls for the last tile
                     foreach (KeyValuePair<string, int> entry in GetNeighbours(current.position)) {
                         if (entry.Value == -1) current.walls[entry.Key] = false;
@@ -204,7 +218,8 @@ public class CreateLevel : MonoBehaviour
     }
 
     [System.Serializable]
-    public class Cell {
+    public class Cell
+    {
         public bool visited;
         public Vector2 position;
         public Dictionary<string, bool> walls = new Dictionary<string, bool>() {
@@ -215,30 +230,27 @@ public class CreateLevel : MonoBehaviour
         };
     }
 
- 
+
 
     //You might need this more than once...
-    void placeBallStart(Vector3 startPos)
-    {
+    void placeBallStart(Vector3 startPos) {
         //Reset Physics
-        ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        enemy.GetComponent<Rigidbody>().velocity = Vector3.zero;
         //Place the ball
-        ball.transform.position = startPos;
+        enemy.transform.localPosition = startPos;
 
     }
 
-    public void EndzoneTrigger(GameObject other)
-    {
+    public void EndzoneTrigger(GameObject other) {
         //Check if ball first...
-        if (other.Equals(ball)) {
+        if (other.Equals(enemy)) {
             //Player has fallen onto ground plane, reset
-            placeBallStart(resetPosition);
+            //placeBallStart(resetPosition);
         }
     }
-    public void winTrigger(GameObject other)
-    {
+    public void winTrigger(GameObject other) {
         //Check if ball first...
-        if (other.Equals(ball)) {
+        if (other.Equals(enemy)) {
             //Destroy this maze
             foreach (Transform child in outerWallsParent) Destroy(child.gameObject);
             foreach (Transform child in innerWallsParent) Destroy(child.gameObject);
@@ -249,12 +261,12 @@ public class CreateLevel : MonoBehaviour
             root.transform.rotation = Quaternion.identity; // to avoid a crooked generation
             CreateOuterWalls();
             BuildMaze();
-            placeBallStart(resetPosition);
+            //placeBallStart(resetPosition);
 
         }
-        
+
 
     }
 }
-	
+
 
