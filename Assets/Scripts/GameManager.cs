@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameManager Instance;
+    public static GameManager Instance;
+
+    public Transform ExitLevel1;
 
     private void Awake() {
-        if (!Instance) {
+        if (Instance) {
             Destroy(this);
         } else {
             Instance = this;
