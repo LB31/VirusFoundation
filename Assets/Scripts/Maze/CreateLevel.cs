@@ -30,10 +30,13 @@ public class CreateLevel : MonoBehaviour
     private Transform innerWallsParent;
     private Transform tilesParent;
 
+    public LocalNavMeshBuilder lnmb;
 
     // Use this for initialization
     void Awake()
     {
+        lnmb = GetComponent<LocalNavMeshBuilder>();
+
         //Gather together all refrences you will need later on
         root = GameObject.Find("MovablePlayfield");
         floor = GameObject.Find("DSBasementFloor");
@@ -80,7 +83,11 @@ public class CreateLevel : MonoBehaviour
             //Place the PlayerBall above the playfield
             resetPosition = new Vector3(xExt * 2 - 2, 10, -zExt * 2 + 2);
             placeBallStart(resetPosition);
-        
+
+            // Make nav mesh
+            lnmb.enabled = true;
+
+
     }
 
     void CreateOuterWalls() {
@@ -109,7 +116,10 @@ public class CreateLevel : MonoBehaviour
             Vector2 pos = GetCoordinates(i);
             float x = -startX + pos.x * tileSize + 2;
             float z = startZ - pos.y * tileSize - 2;
-            Instantiate(tileToUse, new Vector3(x, 0, z), Quaternion.Euler(0, 0, 0), tilesParent);
+            GameObject tile = Instantiate(tileToUse, new Vector3(x, 0, z), Quaternion.Euler(0, 0, 0), tilesParent);
+            if(tile.name.Contains("Exit"))
+            GameManager.Instance.ExitLevel1 = tile.transform;
+
             Cell c = playfield[i];
             if (c.walls["UP"]) Instantiate(innerWall, new Vector3(x, 0, z + 2), Quaternion.Euler(0, 0, 0), innerWallsParent);
             if (c.walls["DOWN"]) Instantiate(innerWall, new Vector3(x, 0, z - 2), Quaternion.Euler(0, 0, 0), innerWallsParent);
