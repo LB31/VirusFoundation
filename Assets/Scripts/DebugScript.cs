@@ -30,10 +30,10 @@ public class DebugScript : MonoBehaviour
 
     private void Bla(Vector2 arg0) {
         print(arg0);
-        float scale = 20;
+        float scale = 100;
         Rigidbody rb = cube.GetComponent<Rigidbody>();
         rb.useGravity = true;
-        rb.AddForce(new Vector3(arg0.x / scale, arg0.y / scale, 20));
+        rb.AddForce(new Vector3(arg0.x / scale, arg0.y / scale, 10));
     }
 
     public void Swipe() {
