@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 
     public Transform ExitLevel1;
 
+    public float bla = 5;
+
     private void Awake() {
         if (Instance) {
             Destroy(this);
@@ -16,13 +18,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 }
