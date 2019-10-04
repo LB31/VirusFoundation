@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -15,6 +16,11 @@ public class GameManager : MonoBehaviour
 
     private bool AudioIsPlaying;
 
+    public int PlayerLife = 50;
+    public TextMeshProUGUI LifeText;
+    public int KilledEnemies;
+    public TextMeshProUGUI EnemyText;
+
     private void Awake() {
         if (Instance) {
             Destroy(this);
@@ -26,6 +32,9 @@ public class GameManager : MonoBehaviour
     private void Start() {
 
     }
+
+
+
 
     public IEnumerator ChangeMusic(string clipName) {
         Music.clip = AllClips[0];
@@ -43,6 +52,10 @@ public class GameManager : MonoBehaviour
     }
 
     public IEnumerator PlaySound(string soundName) {
+        while (Sound.isPlaying) {
+            yield return new WaitForSeconds(0.001f);
+        }
+
         foreach (AudioClip item in AllClips) {
             if (item.name == soundName) {
                 Sound.clip = item;

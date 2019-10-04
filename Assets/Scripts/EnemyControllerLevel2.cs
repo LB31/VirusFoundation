@@ -31,11 +31,21 @@ public class EnemyControllerLevel2 : MonoBehaviour
         } else if(!arrived) {
             anim.Play("RobotAttack", 0, 0.25f);
             arrived = true;
+            StartCoroutine(Suizide());
         }
     }
 
+    public IEnumerator Suizide() {
+        yield return new WaitForSeconds(5);
+        GameManager.Instance.PlayerLife--;
+        GameManager.Instance.LifeText.text = GameManager.Instance.PlayerLife + " / " + "50";
+        Destroy(gameObject);
+    }
+
     private void OnCollisionEnter(Collision collision) {
-        if(collision.gameObject.name == "antiVirus") {
+        if(collision.gameObject.name.Contains("blubedi")) {
+            GameManager.Instance.KilledEnemies++;
+            GameManager.Instance.EnemyText.text = GameManager.Instance.KilledEnemies + " / " + "50";
             Destroy(gameObject);
         }
     }
