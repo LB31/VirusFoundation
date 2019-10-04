@@ -33,4 +33,10 @@ public class EnemyControllerLevel2 : MonoBehaviour
             arrived = true;
         }
     }
+
+    private void OnCollisionEnter(Collision collision) {
+        if(collision.gameObject.name == "antiVirus") {
+            Destroy(gameObject);
+        }
+    }
 }
