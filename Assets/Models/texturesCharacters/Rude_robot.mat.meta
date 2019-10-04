@@ -1,14 +1,8 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:Assets/Models/texturesCharacters/Rude_robot.mat.meta
-guid: ae0fddf3e64675c40a10c1498c4ebfeb
+guid: db2c771a251abb746a86e9da65a00d72
 NativeFormatImporter:
-=======
-guid: c73554196b42d1f40b7a6015410d9c5b
-folderAsset: yes
-DefaultImporter:
->>>>>>> fbb7ffc198af90aae693395a2055158aaec40edf:Assets/Scenes/2level.meta
   externalObjects: {}
-  mainObjectFileID: 2100000
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
