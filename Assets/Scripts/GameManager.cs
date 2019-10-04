@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
-        StartCoroutine(PlaySound("Swipe"));
+
     }
 
     public IEnumerator ChangeMusic(string clipName) {
