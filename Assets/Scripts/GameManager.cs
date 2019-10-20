@@ -16,10 +16,13 @@ public class GameManager : MonoBehaviour
 
     private bool AudioIsPlaying;
 
-    public int PlayerLife = 50;
+    public int PlayerLife = 20;
     public TextMeshProUGUI LifeText;
     public int KilledEnemies;
     public TextMeshProUGUI EnemyText;
+
+    public GameObject World;
+    public GameObject[] UIs;
 
     private void Awake() {
         if (Instance) {
@@ -30,25 +33,39 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
+        ChangeLevel(1);
+    }
 
+    public void ChangeLevel(int number) {
+        foreach (Transform item in World.transform) {
+            item.gameObject.SetActive(false);
+        }
+        foreach (GameObject item in UIs) {
+            item.SetActive(false);
+        }
+        UIs[number].SetActive(true);
+        World.transform.GetChild(number).gameObject.SetActive(true);
+        
+        StartCoroutine(ChangeMusic("Level" + number));
     }
 
 
 
 
     public IEnumerator ChangeMusic(string clipName) {
-        Music.clip = AllClips[0];
-        Music.Play();
-        while (Music.isPlaying) {
-            yield return new WaitForSeconds(1);
-        }
+        //Music.clip = AllClips[0];
+        //Music.Play();
+        //while (Music.isPlaying) {
+        //    yield return new WaitForSeconds(1);
+        //}
         foreach (AudioClip item in AllClips) {
             if(item.name == clipName) {
                 Music.clip = item;
                 Music.Play();
-                break;
+                yield return null;
             }
         }
+
     }
 
     public IEnumerator PlaySound(string soundName) {
@@ -63,6 +80,12 @@ public class GameManager : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    private void Update() {
+        //if (GameManager.Instance.KilledEnemies >= 10) {
+        //    GameManager.Instance.ChangeLevel(2);
+        //}
     }
 
 }

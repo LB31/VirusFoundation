@@ -38,14 +38,20 @@ public class EnemyControllerLevel2 : MonoBehaviour
     public IEnumerator Suizide() {
         yield return new WaitForSeconds(5);
         GameManager.Instance.PlayerLife--;
-        GameManager.Instance.LifeText.text = GameManager.Instance.PlayerLife + " / " + "50";
+        GameManager.Instance.LifeText.text = "Life " + GameManager.Instance.PlayerLife + " / " + "20";
+        if(GameManager.Instance.PlayerLife <= 0) {
+
+        }
         Destroy(gameObject);
     }
 
     private void OnCollisionEnter(Collision collision) {
         if(collision.gameObject.name.Contains("blubedi")) {
             GameManager.Instance.KilledEnemies++;
-            GameManager.Instance.EnemyText.text = GameManager.Instance.KilledEnemies + " / " + "50";
+            GameManager.Instance.EnemyText.text = "Defeated " + GameManager.Instance.KilledEnemies + " / " + "10";
+            if(GameManager.Instance.KilledEnemies >= 10) {
+                GameManager.Instance.ChangeLevel(2);
+            }
             Destroy(gameObject);
         }
     }

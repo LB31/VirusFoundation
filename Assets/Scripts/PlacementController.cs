@@ -7,6 +7,8 @@ using UnityEngine.XR.ARFoundation;
 public class PlacementController : MonoBehaviour
 {
 
+    private List<ARRaycastHit> hits = new List<ARRaycastHit>();
+
     [SerializeField]
     private GameObject placedPrefab;
 
@@ -55,7 +57,10 @@ public class PlacementController : MonoBehaviour
 
             if (arRaycastManager.Raycast(touchPosition, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon)) {
                 Pose hitPose = hits[0].pose;
-                Instantiate(placedPrefab, hitPose.position, placedPrefab.transform.rotation);
+                GameObject world = Instantiate(placedPrefab, hitPose.position, placedPrefab.transform.rotation);
+                GameManager.Instance.World = world;
+                //GameManager.Instance.ChangeLevel(1);
+                world.SetActive(true);
                 worldPlaced = true;
                 RemovePlanes();
             }
@@ -63,5 +68,5 @@ public class PlacementController : MonoBehaviour
     }
 
 
-    static List<ARRaycastHit> hits = new List<ARRaycastHit>();
+    
 }
