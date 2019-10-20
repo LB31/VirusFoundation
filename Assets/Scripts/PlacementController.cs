@@ -63,6 +63,7 @@ public class PlacementController : MonoBehaviour
                 world.SetActive(true);
                 worldPlaced = true;
                 RemovePlanes();
+                
             }
         }
     }
