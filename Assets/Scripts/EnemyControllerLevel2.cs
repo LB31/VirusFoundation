@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyControllerLevel2 : MonoBehaviour
 {
     // Adjust the speed for the application.
-    public float speed = 0.05f;
+    public float speed = 0.02f;
 
     public Transform goal;
 
