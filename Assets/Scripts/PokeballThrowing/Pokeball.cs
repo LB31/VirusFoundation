@@ -26,8 +26,26 @@ public class Pokeball : MonoBehaviour {
 		if (thrown)
 			return;
 
-		if(Input.GetMouseButtonDown(0)) { //for pc = if(Input.GetButtonDown(0)){
-			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition); //for pc = Input.mousePosition
+        bool touched = false;
+        bool threw = false;
+        bool moved = false;
+
+
+
+#if UNITY_EDITOR
+        touched = Input.GetMouseButtonDown(0);
+        threw = Input.GetMouseButtonUp(0);
+        moved = Input.GetMouseButton(0);
+#elif UNITY_ANDROID || UNITY_IOS
+        int touches = Input.touchCount;
+        TouchPhase status = Input.GetTouch(0).phase;
+        touched = touches == 1 && status == TouchPhase.Began;
+        threw = touches == 1 && status == TouchPhase.Ended;
+        moved = touches == 1 && status == TouchPhase.Moved;
+#endif
+
+        if (touched) {
+			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition); 
 			RaycastHit hit;
 
 			if (Physics.Raycast (ray, out hit, 100f)) {
@@ -38,13 +56,13 @@ public class Pokeball : MonoBehaviour {
 			}
 		}
 
-		if(Input.GetMouseButtonUp(0)) { //for pc = if(Input.GetButtonUp(0)){
+		if(threw) { 
 			if (lastMouseY < Input.mousePosition.y) {
 				ThrowBall (Input.mousePosition);
 			}
 		}
 
-		if(Input.GetMouseButton(0)) { //for pc = if(Input.GetButton(0)){
+		if(moved) {
 			lastMouseX = Input.mousePosition.x;
 			lastMouseY = Input.mousePosition.y;
 		}
@@ -59,7 +77,7 @@ public class Pokeball : MonoBehaviour {
 		_rigidbody.useGravity = false;
 		_rigidbody.velocity = Vector3.zero;
 		_rigidbody.angularVelocity = Vector3.zero;
-		transform.rotation = Quaternion.Euler (0f, 200f, 0f);
+		transform.rotation = Quaternion.Euler (0f, 0f, 0f);
 		transform.SetParent (Camera.main.transform);
 	}
 
@@ -76,6 +94,7 @@ public class Pokeball : MonoBehaviour {
 		_rigidbody.useGravity = true;
 
 		float differenceY = (mousePos.y - lastMouseY) / Screen.height * 100;
+        
 		speed = throwSpeed * differenceY;
 
 		float x = (mousePos.x / Screen.width) - (lastMouseX / Screen.width);
