@@ -7,6 +7,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public GameObject World;
+    public GameObject[] UIs;
+
     public Transform ExitLevel1;
 
     public AudioSource Music;
@@ -21,8 +24,7 @@ public class GameManager : MonoBehaviour
     public int KilledEnemies;
     public TextMeshProUGUI EnemyText;
 
-    public GameObject World;
-    public GameObject[] UIs;
+ 
 
     private void Awake() {
         if (Instance) {
@@ -33,7 +35,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
-        ChangeLevel(1);
+
     }
 
     public void ChangeLevel(int number) {
@@ -43,10 +45,11 @@ public class GameManager : MonoBehaviour
         foreach (GameObject item in UIs) {
             item.SetActive(false);
         }
+
         UIs[number].SetActive(true);
         World.transform.GetChild(number).gameObject.SetActive(true);
         
-        StartCoroutine(ChangeMusic("Level" + number));
+        //StartCoroutine(ChangeMusic("Level1"));
     }
 
 

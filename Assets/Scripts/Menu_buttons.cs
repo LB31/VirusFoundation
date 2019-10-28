@@ -11,6 +11,6 @@ public class Menu_buttons : MonoBehaviour
    }
    public void onScene_Level1()
    {
-        SceneManager.LoadScene("Main", LoadSceneMode.Additive);
+        SceneManager.LoadScene("Main", LoadSceneMode.Single);
     }
 }

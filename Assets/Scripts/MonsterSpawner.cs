@@ -37,7 +37,7 @@ public class MonsterSpawner : MonoBehaviour
             GameObject virus = Instantiate(Virus, transform.position, transform.rotation);
             virus.transform.parent = transform;
             virus.transform.LookAt(goalParts[goalNumber]);
-            virus.transform.localScale *= 1.5f;
+            //virus.transform.localScale *= 1.5f;
             EnemyControllerLevel2 ecl = virus.AddComponent<EnemyControllerLevel2>();
             ecl.goal = goalParts[goalNumber];
             virus.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material = MonsterMats[matNumber];

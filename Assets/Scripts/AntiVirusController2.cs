@@ -20,4 +20,5 @@ public class AntiVirusController2 : MonoBehaviour
         yield return new WaitForSeconds(2);
         Destroy(gameObject);
     }
+
 }

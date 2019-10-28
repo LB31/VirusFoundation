@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyControllerLevel2 : MonoBehaviour
 {
     // Adjust the speed for the application.
-    public float speed = 0.02f;
+    public float speed = 0.01f;
 
     public Transform goal;
 
@@ -25,7 +25,7 @@ public class EnemyControllerLevel2 : MonoBehaviour
     {
         // Move our position a step closer to the target.
         float step = speed * Time.deltaTime; // calculate distance to move
-        if (Vector3.Distance(transform.position, goal.position) >= 0.01) {
+        if (Vector3.Distance(transform.position, goal.position) >= 0.02) {
             transform.position = Vector3.MoveTowards(transform.position, goal.position, step);
              
         } else if(!arrived) {
@@ -36,7 +36,7 @@ public class EnemyControllerLevel2 : MonoBehaviour
     }
 
     public IEnumerator Suizide() {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(6);
         GameManager.Instance.PlayerLife--;
         GameManager.Instance.LifeText.text = "Life " + GameManager.Instance.PlayerLife + " / " + "20";
         if(GameManager.Instance.PlayerLife <= 0) {

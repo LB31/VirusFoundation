@@ -6,21 +6,13 @@ using UnityEngine.XR.ARFoundation;
 [RequireComponent(typeof(ARRaycastManager))]
 public class PlacementController : MonoBehaviour
 {
+    public GameObject PrefabToPlace;
+    public GameObject StartTutorial;
+
 
     private List<ARRaycastHit> hits = new List<ARRaycastHit>();
 
-    [SerializeField]
-    private GameObject placedPrefab;
-
-    public GameObject PlacedPrefab
-    {
-        get {
-            return placedPrefab;
-        }
-        set {
-            placedPrefab = value;
-        }
-    }
+    
 
     private bool worldPlaced;
 
@@ -28,6 +20,7 @@ public class PlacementController : MonoBehaviour
 
     void Awake() {
         arRaycastManager = GetComponent<ARRaycastManager>();
+        StartTutorial.SetActive(true);
     }
 
     private bool TryGetTouchPosition(out Vector2 touchPosition) {
@@ -57,13 +50,14 @@ public class PlacementController : MonoBehaviour
 
             if (arRaycastManager.Raycast(touchPosition, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon)) {
                 Pose hitPose = hits[0].pose;
-                GameObject world = Instantiate(placedPrefab, hitPose.position, placedPrefab.transform.rotation);
+                GameObject world = Instantiate(PrefabToPlace, hitPose.position, hitPose.rotation /*PrefabToPlace.transform.rotation*/);
                 GameManager.Instance.World = world;
-                //GameManager.Instance.ChangeLevel(1);
+                GameManager.Instance.ChangeLevel(0);
+                StartCoroutine(GameManager.Instance.ChangeMusic("Level1"));
                 world.SetActive(true);
                 worldPlaced = true;
                 RemovePlanes();
-                
+                StartTutorial.SetActive(false);
             }
         }
     }
