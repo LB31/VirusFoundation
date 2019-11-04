@@ -20,7 +20,7 @@ public class PlacementController : MonoBehaviour
 
     void Awake() {
         arRaycastManager = GetComponent<ARRaycastManager>();
-        StartTutorial.SetActive(true);
+        //StartTutorial.SetActive(true);
     }
 
     private bool TryGetTouchPosition(out Vector2 touchPosition) {

@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-//If you're using please put my name in the credit, or link my Youtube page. :)
-
 public class SwipeController : MonoBehaviour
 {
-    public GameObject AntiVirus;
+    public GameObject AntiVirusPrefab;
+    public Material AntiMat;
+
+    private GameObject AntiVirus;
 
     [SerializeField]
     private float throwSpeed = 30f;
@@ -18,8 +19,7 @@ public class SwipeController : MonoBehaviour
     private Vector3 newPosition;
 
     void Start() {
-        rigidBody = GetComponent<Rigidbody>();
-        Reset();
+
     }
 
     void Update() {
@@ -101,5 +101,28 @@ public class SwipeController : MonoBehaviour
         holding = false;
         thrown = true;
         Invoke("Reset", 5.0f);
+    }
+
+    public void SpawnAntiVirus(int type /* 0 = red, 1 = blue, 2 = green */) {
+        if (AntiVirus) Destroy(AntiVirus);
+
+        Color color = Color.black;
+
+        if (type == 0) color = Color.red; 
+        if (type == 1) color = Color.green;
+        if (type == 2) color = Color.blue;
+
+        AntiMat.color = color;
+
+        AntiVirus = Instantiate(AntiVirusPrefab);
+
+        AntiVirus.transform.position = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.3f, Camera.main.nearClipPlane * 10f));
+        newPosition = AntiVirus.transform.position;
+        thrown = holding = false;
+
+        rigidBody = AntiVirus.GetComponent<Rigidbody>();
+        rigidBody.useGravity = false;
+        AntiVirus.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        AntiVirus.transform.SetParent(Camera.main.transform);
     }
 }
