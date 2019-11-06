@@ -17,21 +17,30 @@ public class SwipeController : MonoBehaviour
 
     private Rigidbody rigidBody;
     private Vector3 newPosition;
+    private bool virusIsPresent;
+
+    private bool touched;
+    private bool threw, initialThrew; 
+    private bool moved;
 
     void Start() {
 
     }
 
     void Update() {
+        if (!virusIsPresent) {
+            return;
+        }
+            
+
         if (holding)
             OnTouch();
 
         if (thrown)
             return;
 
-        bool touched = false;
-        bool threw = false;
-        bool moved = false;
+
+
 
 #if UNITY_EDITOR
         touched = Input.GetMouseButtonDown(0);
@@ -45,22 +54,27 @@ public class SwipeController : MonoBehaviour
         moved = touches == 1 && status == TouchPhase.Moved;
 #endif
 
+
+
         if (touched) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f)) {
-                if (hit.transform == transform) {
+                if (AntiVirus && hit.transform == AntiVirus.transform) {
                     holding = true;
-                    transform.SetParent(null);
+                    //AntiVirus.transform.SetParent(null);
                 }
             }
         }
 
         if (threw) {
-            if (lastMouseY < Input.mousePosition.y) {
+            
+            if (lastMouseY < Input.mousePosition.y && initialThrew) {
                 ThrowBall(Input.mousePosition);
+                initialThrew = false;
             }
+            initialThrew = true;
         }
 
         if (moved) {
@@ -84,9 +98,9 @@ public class SwipeController : MonoBehaviour
 
     void OnTouch() {
         Vector3 mousePos = Input.mousePosition;
-        mousePos.z = Camera.main.nearClipPlane * 7.5f;
+        mousePos.z = Camera.main.nearClipPlane * 5f;
         newPosition = Camera.main.ScreenToWorldPoint(mousePos);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, newPosition, 50f * Time.deltaTime);
+        AntiVirus.transform.position = Vector3.Lerp(AntiVirus.transform.position, newPosition, 50f * Time.deltaTime);
     }
 
     void ThrowBall(Vector2 mousePos) {
@@ -100,7 +114,10 @@ public class SwipeController : MonoBehaviour
         rigidBody.AddForce((direction * speed / 2f) + (Vector3.up * speed));
         holding = false;
         thrown = true;
-        Invoke("Reset", 5.0f);
+        //Invoke("Reset", 5.0f);
+        StartCoroutine(GameManager.Instance.PlaySound("Scream"));
+
+        virusIsPresent = false;
     }
 
     public void SpawnAntiVirus(int type /* 0 = red, 1 = blue, 2 = green */) {
@@ -115,8 +132,8 @@ public class SwipeController : MonoBehaviour
         AntiMat.color = color;
 
         AntiVirus = Instantiate(AntiVirusPrefab);
-
-        AntiVirus.transform.position = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.3f, Camera.main.nearClipPlane * 10f));
+        AntiVirus.transform.localScale /= 3;
+        AntiVirus.transform.position = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.3f, Camera.main.nearClipPlane * 5f));
         newPosition = AntiVirus.transform.position;
         thrown = holding = false;
 
@@ -124,5 +141,8 @@ public class SwipeController : MonoBehaviour
         rigidBody.useGravity = false;
         AntiVirus.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         AntiVirus.transform.SetParent(Camera.main.transform);
+
+        virusIsPresent = true;
+        threw = false;
     }
 }

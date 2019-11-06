@@ -9,7 +9,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject World;
     public GameObject[] UIs;
+    public GameObject PlaceTutorial;
 
+    // TODO move his
     public Transform ExitLevel1;
 
     public AudioSource Music;
@@ -19,6 +21,7 @@ public class GameManager : MonoBehaviour
 
     private bool AudioIsPlaying;
 
+    // TODO move this in another script
     public int PlayerLife = 20;
     public TextMeshProUGUI LifeText;
     public int KilledEnemies;
@@ -35,7 +38,8 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
-
+        ChangeLevel(-1);
+        PlaceTutorial.SetActive(true);
     }
 
     public void ChangeLevel(int number) {
@@ -45,6 +49,7 @@ public class GameManager : MonoBehaviour
         foreach (GameObject item in UIs) {
             item.SetActive(false);
         }
+        if (number == -1) return; // for initialization
 
         UIs[number].SetActive(true);
         World.transform.GetChild(number).gameObject.SetActive(true);

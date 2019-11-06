@@ -52,6 +52,7 @@ public class PlacementController : MonoBehaviour
                 Pose hitPose = hits[0].pose;
                 GameObject world = Instantiate(PrefabToPlace, hitPose.position, hitPose.rotation /*PrefabToPlace.transform.rotation*/);
                 GameManager.Instance.World = world;
+
                 GameManager.Instance.ChangeLevel(0);
                 StartCoroutine(GameManager.Instance.ChangeMusic("Level1"));
                 world.SetActive(true);
